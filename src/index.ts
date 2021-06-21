@@ -1,5 +1,5 @@
 const defaultTokenKey = "auth_token";
-const defaultSignInRoute = "/login";
+const defaultLoginRoute = "/login";
 const defaultMainRoute = "/";
 
 type CommitFn = (mutation: any, args?: any) => any;
@@ -10,21 +10,21 @@ interface AuthResult {
 }
 
 interface AuthStoreConfig {
-    signIn: (credentials: any) => Promise<AuthResult>;
-    signUp: (data: any) => Promise<AuthResult>;
+    login: (credentials: any) => Promise<AuthResult>;
+    register: (data: any) => Promise<AuthResult>;
     getMe: () => Promise<any>;
     logout: () => Promise<any>;
 
     storageTokenKey?: string;
-    signInRoute?: string;
+    loginRoute?: string;
     mainRoute?: string;
 }
 
 interface AuthState {
     isLoadingUser: boolean;
     isLoggingOut: boolean;
-    isSigningIn: boolean;
-    isSigningUp: boolean;
+    isLogging: boolean;
+    isRegistering: boolean;
 
     user?: any;
     token?: null | string;
@@ -34,8 +34,8 @@ export function createAuthStoreModule(config: AuthStoreConfig) {
     if (!config.storageTokenKey) {
         config.storageTokenKey = defaultTokenKey;
     }
-    if (!config.signInRoute) {
-        config.signInRoute = defaultSignInRoute;
+    if (!config.loginRoute) {
+        config.loginRoute = defaultLoginRoute;
     }
     if (!config.mainRoute) {
         config.mainRoute = defaultMainRoute;
@@ -47,8 +47,8 @@ export function createAuthStoreModule(config: AuthStoreConfig) {
         state: {
             isLoadingUser: false,
             isLoggingOut: false,
-            isSigningIn: false,
-            isSigningUp: false,
+            isLogging: false,
+            isRegistering: false,
 
             user: null,
             token: localStorage.getItem(config.storageTokenKey),
@@ -99,28 +99,28 @@ export function createAuthStoreModule(config: AuthStoreConfig) {
                     return Promise.resolve();
                 }
             },
-            signIn({ commit, state }: { commit: CommitFn, state: AuthState }, credentials: any) {
-                return config.signIn(credentials)
+            login({ commit, state }: { commit: CommitFn, state: AuthState }, credentials: any) {
+                return config.login(credentials)
                     .then(auth => {
                         commit("login", auth);
 
                         return auth;
                     })
                     .finally(() => {
-                        state.isSigningIn = false;
+                        state.isLogging = false;
                     });
             },
-            signUp({ commit, state }: { commit: CommitFn, state: AuthState }, data: any) {
-                state.isSigningIn = true;
+            register({ commit, state }: { commit: CommitFn, state: AuthState }, data: any) {
+                state.isLogging = true;
 
-                return config.signUp(data)
+                return config.register(data)
                     .then(auth => {
                         commit("login", auth);
 
                         return auth;
                     })
                     .finally(() => {
-                        state.isSigningIn = false;
+                        state.isLogging = false;
                     });
             },
             logout({ commit, state }: { commit: CommitFn, state: AuthState }) {
@@ -145,7 +145,7 @@ export function setupRouterGuard(
     $store: any
 ) {
     $router.beforeEach((to: any, from: any, next: any) => {
-        const { mainRoute, signInRoute } = $store.state.auth.config;
+        const { mainRoute, loginRoute } = $store.state.auth.config;
 
         if ($store.getters["auth/isReady"]) {
             if ($store.getters["auth/isAuthorized"]) {
@@ -154,7 +154,7 @@ export function setupRouterGuard(
                 }
             } else {
                 if (!to.meta.guest) {
-                    return next(`/${signInRoute}?to=${encodeURI(to.path)}`);
+                    return next(`${loginRoute}?to=${encodeURI(to.path)}`);
                 }
             }
         }

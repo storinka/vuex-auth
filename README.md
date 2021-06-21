@@ -19,9 +19,9 @@ import { createAuthStoreModule } from "@storinka/vuex-auth";
 export default createStore({
     modules: {
         auth: createAuthStoreModule({
-            signIn: credentials => fetch("auth/signIn", credentials),
-            signUp: data => fetch("auth/signUp", data),
-            getMe: () => fetch("auth/getMe"),
+            login: credentials => fetch("auth/login", credentials),
+            register: data => fetch("auth/register", data),
+            getMe: () => fetch("auth/me"),
             logout: () => fetch("auth/logout"),
 
             tokenKey: "auth_token",
