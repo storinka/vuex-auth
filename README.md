@@ -42,3 +42,25 @@ export default {
     }
 }
 ```
+
+```javascript
+// main.js
+import store from "./store";
+
+axios.interceptors.request.use(request => {
+    request.headers["Authorization"] = `Bearer ${store.state.auth.token}`;
+
+    return request;
+});
+
+axios.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 401) {
+            store.commit("auth/logout");
+        }
+
+        throw error;
+    },
+);
+```
