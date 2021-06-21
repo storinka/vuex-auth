@@ -148,7 +148,7 @@ export function setupRouterGuard(
         const { mainRoute, signInRoute } = $store.state.auth.config;
 
         if ($store.getters["auth/isReady"]) {
-            if ($store.getters["auth/isReady"]) {
+            if ($store.getters["auth/isAuthorized"]) {
                 if (to.meta.guest) {
                     return next(mainRoute);
                 }

@@ -25,7 +25,6 @@ export default createStore({
             logout: () => fetch("auth/logout"),
 
             tokenKey: "auth_token",
-            namespaced: true,
         }),
     }
 });
