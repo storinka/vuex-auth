@@ -91,10 +91,11 @@ export function createAuthStoreModule(config: AuthStoreConfig) {
                                 token: state.token
                             });
 
-                            state.isLoadingUser = false;
-
                             return user;
                         })
+                        .finally(() => {
+                            state.isLoadingUser = false;
+                        });
                 } else {
                     return Promise.resolve();
                 }
