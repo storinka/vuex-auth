@@ -173,7 +173,7 @@ export function initAuth(
             if (user) {
                 const { mainRoute } = $store.state.auth.config;
 
-                if ($router.currentRoute && $router.currentRoute.meta.guest) {
+                if ($router.currentRoute && $router.currentRoute.meta && $router.currentRoute.meta.guest) {
                     $router.replace(mainRoute)
                 }
             }
